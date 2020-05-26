@@ -13,6 +13,7 @@
   "dependencies": {
     "copy-webpack-plugin": "^6.0.1",
     "grommet": "^2.13.0",
+    "nanocurrency": "^2.4.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
