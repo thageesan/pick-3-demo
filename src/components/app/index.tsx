@@ -1,7 +1,16 @@
 import React from 'react';
+import { Switch, Route, Redirect } from 'react-router-dom'
+
+import { HomePage } from 'pages';
 
 export default function App() {
     return (
-        <h1>Welcome to the Pick 3 Demo</h1>
+        <>
+            <Switch>
+                <Route exact path={'/'} component={ HomePage }/>
+                <Redirect  to='/' />
+            </Switch>
+        </>
+
     )
 }
