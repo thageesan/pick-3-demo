@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "lib": ["es5", "es6", "dom"],
+    "allowJs": true,
+    "module": "commonjs",
+    "target": "es5",
+    "jsx": "react",
+    "strict": true,
+    "outDir": "./build",
+    "esModuleInterop": true, // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html
+    "downlevelIteration": true, // https://mariusschulz.com/blog/downlevel-iteration-for-es3-es5-in-typescript
+    "sourceMap": true,
+    "strictNullChecks": true, // https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html
+    "forceConsistentCasingInFileNames": true // https://webhint.io/docs/user-guide/hints/hint-typescript-config/consistent-casing/
+  }
+}
