@@ -1,5 +1,7 @@
 import * as utils from 'core/utils';
+import { LoginAPI } from 'core/api'
 
 export {
-    utils
+    LoginAPI,
+    utils,
 }

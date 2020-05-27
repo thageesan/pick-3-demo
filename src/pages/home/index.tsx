@@ -1,42 +1,24 @@
-import { utils } from 'core'
-
+import { Box, Button, Form, FormField, Heading, TextInput } from 'grommet';
 import React, { useState } from 'react';
 
-import { AlertComponent, Window } from 'components';
-import { Box, Button, Form, FormField, Heading, TextInput } from 'grommet';
+import { Window } from 'components';
 
 
 interface IHomePageState {
-    nanoAddress: string | null
-    error: string | null
+    nanoAddress: string
 }
 
-export default function HomePage() {
+interface IHomePageProps {
+    register: (nanoAddress: string| null) => Promise<void>
+}
+
+export default function HomePage(props: IHomePageProps) {
 
     const defaultState: IHomePageState = {
-        error: null,
-        nanoAddress: null,
+        nanoAddress: '',
     };
 
     const [state, setState] = useState(defaultState);
-    async function register(): Promise<void> {
-        const { nanoAddress }  = state;
-        if (nanoAddress === null) {
-            setState((state) => ({...state, error: 'Please enter a nano address.'}));
-            return;
-        }
-
-        if (utils.validateNanoAddress(nanoAddress)) {
-            /**
-             * TODO: make api call and register nano address
-             * TODO: navigate to login page
-             */
-
-            setState((state) => ({...state, error: null}))
-        } else {
-            setState((state) => ({...state, error: 'You have entered an invalid Nano address.'}))
-        }
-    }
 
 
     return (
@@ -49,7 +31,7 @@ export default function HomePage() {
                         setState(nextValue)
                     }}
                     onSubmit={() => {
-                        register().then(() => null)
+                        props.register(state.nanoAddress).then(() => null)
                     }}
                 >
                     <Box
@@ -69,9 +51,6 @@ export default function HomePage() {
                         justify={'center'}
                     >
                         <Button type={'submit'} primary label={'Initialize'} />
-                        { state.error ? (
-                            <AlertComponent message={state.error}/>
-                        ): null}
                     </Box>
                 </Form>
             </Window>
