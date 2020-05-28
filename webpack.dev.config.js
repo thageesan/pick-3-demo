@@ -62,7 +62,8 @@ module.exports = (env) => {
             plugins: [new TsconfigPathsPlugin()]
         },
         devServer: {
-            port: 9001
+            port: 9001,
+            historyApiFallback: true,
         },
         plugins: [
             new HtmlWebpackPlugin({
