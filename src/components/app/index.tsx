@@ -42,30 +42,35 @@ export default function App() {
             const toAddress: string = response['address'];
             const amount: string = response['amount'];
             const expiration = response['timestamp'];
+            const sessionId = response['session_id'];
 
             setState((state) => ({...state, error: null, toAddress: toAddress, amount: amount, expiration: expiration}));
 
-            history.push('/login')
+            loginApi.connectToStream(sessionId);
+
+            history.push('/login');
+            await loginApi.testSSE();
         } else {
             setState((state) => ({...state, error: 'You have entered an invalid Nano address.'}))
         }
     }
 
     return (
-        <>
-            <Switch>
-                <Route exact path={'/'} render={(props) => {
-                    return <HomePage {...props} register={register}/>
-                }} />
-                <Route exact path={'/login'} render={(props) => {
-                    return <LoginPage {...props} amount={state.amount} expiration={state.expiration} toAddress={state.toAddress}/>
-                }} />
-                <Redirect  to='/' />
-            </Switch>
+        <Switch>
+            <Route exact path={'/'}>
+                <HomePage register={register}/>
+            </Route>
+            <Route exact path={'/login'}>
+                {state.amount && state.expiration && state.toAddress ? (
+                    <LoginPage amount={state.amount} expiration={state.expiration} toAddress={state.toAddress}/>
+                ) : (
+                    <Redirect to={'/'} />
+                )}
+            </Route>
+            <Redirect  to='/' />
             { state.error ? (
                 <AlertComponent message={state.error}/>
             ): null}
-        </>
-
+        </Switch>
     )
 }
