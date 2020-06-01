@@ -1,5 +1,7 @@
 import LoginAPI from 'core/api/login';
+import GameApi from './game';
 
 export {
-    LoginAPI
+    GameApi,
+    LoginAPI,
 }

@@ -1,3 +1,4 @@
+import PubSub, { EPubSubChannels } from 'core/pubsub';
 
 interface ILoginOptions {
     baseUrl?: string | null
@@ -14,7 +15,7 @@ export default class LoginSSE {
     private readonly eventSource: EventSource;
 
 
-    constructor(sessionId: string, options: ILoginOptions | null = null) {
+    constructor(sessionId: string, pubSub: PubSub, options: ILoginOptions | null = null) {
         if (options && options.baseUrl) {
             this.baseUrl = options.baseUrl;
         }
@@ -29,9 +30,16 @@ export default class LoginSSE {
 
         this.eventSource = new EventSource(`${this.url}?channel=${sessionId}`, {withCredentials: true});
 
-        this.eventSource.addEventListener(EnumSSEEvent.SIGN_IN_SUCCESS, (e) => {
+        this.eventSource.addEventListener(EnumSSEEvent.SIGN_IN_SUCCESS, (e:any) => {
             console.log('I have received an event!', e);
+            const message = JSON.parse(e.data);
+            const { token } = message;
+            pubSub.publish(EPubSubChannels.SUCCESSFUL_SIGN_IN, token)
         });
+
+        this.eventSource.addEventListener(EnumSSEEvent.GAME_CREATED, () => {
+            pubSub.publish(EPubSubChannels.GAME_CREATED, null);
+        })
 
     }
 
@@ -40,5 +48,6 @@ export default class LoginSSE {
 }
 
 enum EnumSSEEvent {
-    'SIGN_IN_SUCCESS' = 'SIGN_IN_SUCCESS'
+    'SIGN_IN_SUCCESS' = 'SIGN_IN_SUCCESS',
+    'GAME_CREATED' = 'GAME_CREATED'
 }

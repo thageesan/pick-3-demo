@@ -1,5 +1,6 @@
 import { request } from 'core/api/helpers';
 import LoginSSE from 'core/api/login/sse';
+import PubSub from 'core/pubsub';
 
 interface ILoginApiOptions {
     baseUrl?: string | null
@@ -15,9 +16,12 @@ export default class LoginAPI {
     private readonly headers: Record<string, string>;
     private readonly url: string = `${this.baseUrl}:${this.port}${this.apiEndpoint}`;
     private sse: LoginSSE | null = null;
+    private readonly pubSub: PubSub;
 
 
-    constructor(options: ILoginApiOptions | null = null) {
+    constructor(pubSub: PubSub, options: ILoginApiOptions | null = null) {
+        this.pubSub = pubSub;
+
         if (options && options.baseUrl) {
             this.baseUrl = options.baseUrl;
         }
@@ -50,22 +54,48 @@ export default class LoginAPI {
         }
     }
 
-    connectToStream(session_id: string) {
-        if (this.sse === null) {
-            this.sse = new LoginSSE(session_id);
-        }
-    }
-
-    async testSSE(): Promise<object> {
+    async login(token: string): Promise<object> {
         try {
             return await request(
-                `${this.url}/test_sse`,
-                'GET',
-                null,
-                this.headers,
+                `${this.url}/login`,
+                'POST',
+                {
+                    token: token
+                },
+                this.headers
             )
         } catch (e) {
             throw e;
+        }
+    }
+
+    async logout(): Promise<object> {
+        try {
+            return await request(
+                `${this.url}/logout`,
+                'GET',
+                this.headers
+            )
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async authenticated(): Promise<object> {
+        try {
+            return await request(
+                `${this.url}/authenticated`,
+                'GET',
+                this.headers
+            )
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    connectToStream(session_id: string) {
+        if (this.sse === null) {
+            this.sse = new LoginSSE(session_id, this.pubSub);
         }
     }
 

@@ -2,6 +2,7 @@ import { Heading, Text } from 'grommet';
 import React from 'react';
 
 import { Window } from 'components';
+import TimerComponent from 'components/timer';
 
 interface ILoginPageProps {
     amount: string | null
@@ -15,11 +16,12 @@ export default function LoginPage(props: ILoginPageProps) {
         <>
             <Window>
                 <Heading>Login Page</Heading>
-                <Text>
-                    Amount: {props.amount}
-                    To: {props.toAddress}
-                    Expiration: {props.expiration}
+                <Text
+                    size={'large'}
+                >
+                    To Login Send {props.amount} Nano to {props.toAddress}
                 </Text>
+                <TimerComponent expiryTime={props.expiration ? parseInt(props.expiration) : 0}/>
             </Window>
         </>
     )
