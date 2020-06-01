@@ -7,9 +7,11 @@ interface IAlertComponent {
 
 export default function AlertComponent(props: IAlertComponent) {
     return (
-        <Box fill="horizontal" background="status-error">
-            <Box pad="medium" direction="row" gap="medium" align="center">
-                <Text>{props.message}</Text>
+        <Box background="status-error">
+            <Box pad="medium" gap="medium">
+                <Text
+                    wordBreak={'break-word'}
+                >{props.message}</Text>
             </Box>
         </Box>
     )
