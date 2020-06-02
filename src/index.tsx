@@ -4,8 +4,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 import { App } from 'components'
 import { AuthProvider } from 'providers/auth';
-import LoginAPI from 'core/api/login';
-import PubSub from 'core/pubsub';
+import { LoginAPI, PubSub } from 'core';
 
 const pubSub = new PubSub();
 const loginAPI = new LoginAPI(pubSub);

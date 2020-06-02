@@ -47,6 +47,38 @@ export default class GameApi {
         }
     }
 
+    async draw(gameId: string, ticketId: string): Promise<object> {
+        try {
+            return await request(
+                `${this.url}/game/draw`,
+                'POST',
+                {
+                    ticketId: ticketId,
+                    gameId: gameId,
+                },
+                this.headers
+            )
+        } catch (e) {
+            throw e;
+        }
+    }
+
+    async pickNumbers(numbers: Array<number>, ticketId: string): Promise<object> {
+        try {
+            return await request(
+                `${this.url}/game/pick`,
+                'POST',
+                {
+                    numbers: numbers,
+                    ticketId: ticketId,
+                },
+                this.headers
+            )
+        } catch (e) {
+            throw e;
+        }
+    }
+
     async provisionGame(): Promise<object> {
         try {
             return await request(

@@ -39,7 +39,14 @@ export default class LoginSSE {
 
         this.eventSource.addEventListener(EnumSSEEvent.GAME_CREATED, () => {
             pubSub.publish(EPubSubChannels.GAME_CREATED, null);
-        })
+        });
+
+        this.eventSource.addEventListener(EnumSSEEvent.DREW_NUMBERS, (e:any) => {
+            const data = JSON.parse(e.data);
+            const { message } = data;
+            const numbers = message.split(',');
+            pubSub.publish(EPubSubChannels.DREW_NUMBERS, numbers);
+        });
 
     }
 
@@ -49,5 +56,6 @@ export default class LoginSSE {
 
 enum EnumSSEEvent {
     'SIGN_IN_SUCCESS' = 'SIGN_IN_SUCCESS',
-    'GAME_CREATED' = 'GAME_CREATED'
+    'GAME_CREATED' = 'GAME_CREATED',
+    'DREW_NUMBERS' = 'DREW_NUMBERS',
 }

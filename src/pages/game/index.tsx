@@ -1,29 +1,30 @@
-import { Heading, Text } from 'grommet';
 import React from 'react';
 import { useGame } from 'providers/game';
-
-
+import NewGame from './new';
+import PickNumbers from './pick';
+import DrawGame from './draw';
 
 export default function GamePage() {
 
     const {
-        amount,
-        gameAddress,
-        gameFound
+        gameFound,
+        numberOne,
+        numberTwo,
+        numberThree,
     } = useGame();
 
     return (
         <>
-            <Heading>Game Page</Heading>
-            <Text>
-                {
-                    !gameFound ? (
-                            `You have not active draws at the moment.  To create one send ${amount} Nano to ${gameAddress}`
-                    ) : (
-                        `Game found!`
-                    )
-                }
-            </Text>
+            {
+                !gameFound ? (
+                    <NewGame/>
+                ) : gameFound && ( numberOne === null || numberTwo === null || numberThree === null) ? (
+                    <PickNumbers/>
+                ) : gameFound && ( numberOne !== null || numberTwo !== null || numberThree !== null) ? (
+                    <DrawGame/>
+                ) : null
+            }
+
         </>
     )
 }

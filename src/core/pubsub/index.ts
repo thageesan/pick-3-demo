@@ -46,6 +46,7 @@ export default class PubSub {
 }
 
 export enum EPubSubChannels {
+    DREW_NUMBERS = 'DREW_NUMBERS',
     GAME_CREATED = 'GAME_CREATED',
     SUCCESSFUL_SIGN_IN = 'SUCCESSFUL_SIGN_IN',
 }
