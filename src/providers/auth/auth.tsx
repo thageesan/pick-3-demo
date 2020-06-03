@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import { utils, LoginAPI, PubSub, EPubSubChannels } from 'core';
 
-import reducer, { defaultState, EAuthAction, IAuthAction } from 'providers/auth/reducer';
+import reducer, { defaultState, EAuthAction, IAuthAction, IAuthState } from 'providers/auth/reducer';
 
 interface IAuthProviderProps {
     loginApi: LoginAPI
@@ -12,15 +12,11 @@ interface IAuthProviderProps {
 }
 
 const AuthContext = React.createContext({
+    ...defaultState,
     pubSub: new PubSub(),
-    authenticated: false,
-    amount: '',
-    error: '',
-    expiration: '',
     logout: async () => {
         return;
     },
-    toAddress: '',
     register: async (_nanoAddress: string | null) => {
         return;
     }
@@ -32,14 +28,14 @@ function AuthProvider(props: IAuthProviderProps) {
 
     const history = useHistory();
 
-    async function init() {
-        await authenticate();
+    function init(defaultState: IAuthState) {
+        return defaultState;
     }
 
-    // @ts-ignore
     const [state, dispatch] = useReducer(reducer, defaultState, init);
 
     useEffect(() => {
+
         props.pubSub.subscribe(EPubSubChannels.SUCCESSFUL_SIGN_IN, async (token: string) => {
             const response = await props.loginApi.login(token);
             if (response && response.hasOwnProperty('result')) {
@@ -50,6 +46,8 @@ function AuthProvider(props: IAuthProviderProps) {
                 }
             }
         });
+        // noinspection JSIgnoredPromiseFromCall
+        authenticate();
     }, []);
 
      async function authenticate(): Promise<void> {
@@ -59,7 +57,7 @@ function AuthProvider(props: IAuthProviderProps) {
             const sessionId = data.session_id;
             props.loginApi.connectToStream(sessionId);
 
-            // @ts-ignore
+
             dispatch({
                 type: EAuthAction.AUTHENTICATED,
                 item: {
@@ -75,7 +73,6 @@ function AuthProvider(props: IAuthProviderProps) {
              const data = response as {status: string, message: string};
              const {status} = data;
              if (status === 'success') {
-                 // @ts-ignore
                  dispatch({
                      type: EAuthAction.UNAUTHENTICATED,
                      item: {
@@ -89,7 +86,6 @@ function AuthProvider(props: IAuthProviderProps) {
     const register = async function(nanoAddress: string | null): Promise<void> {
 
         if (nanoAddress === null) {
-            // @ts-ignore
             dispatch({
                 type: EAuthAction.NO_NANO_ADDRESS,
                 item: null
@@ -101,15 +97,14 @@ function AuthProvider(props: IAuthProviderProps) {
 
             const response = await props.loginApi.register(nanoAddress) as {[key:string]: string};
             const toAddress: string = response['address'];
-            const amount: string = response['amount'];
+            const send_amount: string = response['amount'];
             const expiration = response['timestamp'];
             const sessionId = response['session_id'];
-            // @ts-ignore
             dispatch({
                 type: EAuthAction.REGISTRATION,
                 item: {
                     toAddress,
-                    amount,
+                    amount: send_amount,
                     expiration,
                     sessionId,
                 }
@@ -119,7 +114,6 @@ function AuthProvider(props: IAuthProviderProps) {
 
             history.push('/login');
         } else {
-            // @ts-ignore
             dispatch({
                 type: EAuthAction.INVALID_NANO_ADDRESS,
                 item: null
@@ -143,11 +137,11 @@ function AuthProvider(props: IAuthProviderProps) {
     } = props;
 
     const value = {
+        logout,
         amount,
         authenticated,
         error,
         expiration,
-        logout,
         nanoAddress,
         pubSub,
         register,

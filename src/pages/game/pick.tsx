@@ -85,7 +85,7 @@ export default function PickNumbers() {
                     direction={'column'}
                 >
                     <Button type={'submit'} primary label={'Submit'}/>
-                    { error ? (
+                    { error && errorMessage ? (
                         <AlertComponent
                             message={errorMessage}
                         />

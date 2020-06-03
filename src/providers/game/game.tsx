@@ -1,9 +1,8 @@
 import React, { useEffect, useReducer } from 'react';
-import { EPubSubChannels, GameApi, PubSub } from 'core';
+import { EPubSubChannels, GameApi, PubSub, utils } from 'core';
 
 
-import reducer, { defaultState, EGameAction } from './reducer';
-import { isNumber } from 'core/utils';
+import reducer, { defaultState, EGameAction, IGameState } from 'providers/game/reducer';
 
 
 interface IGameProviderProps {
@@ -13,32 +12,19 @@ interface IGameProviderProps {
 }
 
 const GameContext = React.createContext({
+    ...defaultState,
     activeGame: async () => {
         return;
     },
-    amount: '',
     draw: async () => {
         return;
     },
-    error: false,
-    errorMessage: '',
-    game: {},
-    gameAddress: '',
-    gameFound: false,
-    gameId: '',
-    numberOne: 0,
-    numberTwo: 0,
-    numberThree: 0,
-    pickNumbers: async (numberOne: string, numberTwo: string, numberThree: string) => {
+    pickNumbers: async (_numberOne: string, _numberTwo: string, _numberThree: string) => {
         return;
     },
     provisionGame: async () => {
         return;
     },
-    ticketId: '',
-    winningNumOne: 0,
-    winningNumTwo: 0,
-    winningNumThree: 0,
 });
 
 GameContext.displayName = 'GameContext';
@@ -46,13 +32,10 @@ GameContext.displayName = 'GameContext';
 
 function GameProvider(props: IGameProviderProps) {
 
-
-    async function init() {
-        await activeGame();
+    function init(defaultState: IGameState) {
         return defaultState;
     }
 
-    // @ts-ignore
     const [state, dispatch] = useReducer(reducer, defaultState, init);
 
     useEffect(() => {
@@ -62,7 +45,7 @@ function GameProvider(props: IGameProviderProps) {
 
         props.pubSub.subscribe(EPubSubChannels.DREW_NUMBERS, (numbers: Array<string>) => {
             const [ numberOne, numberTwo, numberThree ] = numbers;
-            if (!isNumber(numberOne) || !isNumber(numberTwo) || !isNumber(numberThree)) {
+            if (!utils.isNumber(numberOne) || !utils.isNumber(numberTwo) || !utils.isNumber(numberThree)) {
                 return;
             }
             const numOne: number = parseInt(numberOne);
@@ -72,10 +55,10 @@ function GameProvider(props: IGameProviderProps) {
             if (numOne > 9 && numOne < 0 || numTwo > 9 && numTwo < 0 || numThree > 9 && numTwo < 0 ) {
                 return;
             }
-            // @ts-ignore
+
             dispatch({
                 type: EGameAction.WINNING_NUMBERS,
-                items: {
+                item: {
                     winningNumOne: numOne,
                     winningNumTwo: numTwo,
                     winningNumThree: numThree,
@@ -83,6 +66,8 @@ function GameProvider(props: IGameProviderProps) {
             });
 
         });
+        // noinspection JSIgnoredPromiseFromCall
+        activeGame();
     }, []);
 
     async function activeGame(): Promise<void> {
@@ -92,10 +77,10 @@ function GameProvider(props: IGameProviderProps) {
             const data = response as any;
             const { result } = data;
             if (result === 'not found') {
-                // @ts-ignore
+
                 dispatch({
                     type: EGameAction.NO_ACTIVE_GAME_FOUND,
-                    items: {
+                    item: {
                         gameFound: false,
                     }
                 });
@@ -105,7 +90,7 @@ function GameProvider(props: IGameProviderProps) {
                 // @ts-ignore
                 dispatch({
                     type: EGameAction.ACTIVE_GAME_FOUND,
-                    items: {
+                    item: {
                         gameFound: true,
                         ticketId: ticketId,
                         gameId: gameId,
@@ -125,16 +110,15 @@ function GameProvider(props: IGameProviderProps) {
         const {
             gameId,
             ticketId,
-        } = state
+        } = state;
         await props.gameAPI.draw(gameId, ticketId);
     }
 
     async function pickNumbers(numberOne: string, numberTwo: string, numberThree: string): Promise<void> {
-        if (!isNumber(numberOne) || !isNumber(numberTwo) || !isNumber(numberThree)) {
-            // @ts-ignore
+        if (!utils.isNumber(numberOne) || !utils.isNumber(numberTwo) || !utils.isNumber(numberThree)) {
             dispatch({
                 type: EGameAction.NOT_A_NUMBER,
-                items: null
+                item: null
             });
             return;
         }
@@ -144,18 +128,18 @@ function GameProvider(props: IGameProviderProps) {
         const numThree: number = parseInt(numberThree);
 
         if (numOne > 9 && numOne < 0 || numTwo > 9 && numTwo < 0 || numThree > 9 && numTwo < 0 ) {
-            // @ts-ignore
+
             dispatch({
                 type: EGameAction.NUMBER_NOT_IN_RANGE,
-                items: null
+                item: null
             });
             return;
         }
 
-        // @ts-ignore
+
         dispatch({
             type: EGameAction.REMOVE_ERROR_FLAG,
-            items: null
+            item: null
         });
         const { ticketId } = state;
         const response = await props.gameAPI.pickNumbers([numOne, numTwo, numThree], ticketId);
@@ -176,10 +160,10 @@ function GameProvider(props: IGameProviderProps) {
         if (response && response.hasOwnProperty('address')) {
             const data = response as { address: string, amount: string};
             const { address, amount } = data;
-            // @ts-ignore
+
             dispatch({
                 type: EGameAction.RECEIVED_GAME_PROVISION_INFO,
-                items: {
+                item: {
                     address,
                     amount,
                 }

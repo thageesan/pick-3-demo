@@ -1,7 +1,7 @@
-interface IGameState {
+export interface IGameState {
     amount: null | string
     error: boolean
-    errorMessage: null
+    errorMessage: null | string
     game: null
     gameAddress: null | string
     gameFound: boolean
@@ -15,9 +15,9 @@ interface IGameState {
     winningNumThree: null | number
 }
 
-interface IGameAction {
+export interface IGameAction {
     type: EGameAction
-    items: any
+    item: any
 
 }
 
@@ -54,20 +54,20 @@ export default function reducer(state: IGameState, action: IGameAction) {
         case EGameAction.ACTIVE_GAME_FOUND:
             return {
                 ...state,
-                gameFound: action.items.gameFound,
-                gameId: action.items.gameId,
-                ticketId: action.items.ticketId,
-                numberOne: action.items.numberOne,
-                numberTwo: action.items.numberTwo,
-                numberThree: action.items.numberThree,
-                winningNumOne: action.items.winningNumOne,
-                winningNumTwo: action.items.winningNumTwo,
-                winningNumThree: action.items.winningNumThree,
+                gameFound: action.item.gameFound,
+                gameId: action.item.gameId,
+                ticketId: action.item.ticketId,
+                numberOne: action.item.numberOne,
+                numberTwo: action.item.numberTwo,
+                numberThree: action.item.numberThree,
+                winningNumOne: action.item.winningNumOne,
+                winningNumTwo: action.item.winningNumTwo,
+                winningNumThree: action.item.winningNumThree,
             };
         case EGameAction.NO_ACTIVE_GAME_FOUND:
             return {
                 ...state,
-                gameFound: action.items.gameFound
+                gameFound: action.item.gameFound
             };
         case EGameAction.NOT_A_NUMBER:
             return {
@@ -84,8 +84,8 @@ export default function reducer(state: IGameState, action: IGameAction) {
         case EGameAction.RECEIVED_GAME_PROVISION_INFO:
             return {
                 ...state,
-                gameAddress: action.items.address,
-                amount: action.items.amount,
+                gameAddress: action.item.address,
+                amount: action.item.amount,
             };
         case EGameAction.REMOVE_ERROR_FLAG:
             return {
@@ -95,9 +95,9 @@ export default function reducer(state: IGameState, action: IGameAction) {
         case EGameAction.WINNING_NUMBERS:
             return {
                 ...state,
-                winningNumOne: action.items.winningNumOne,
-                winningNumTwo: action.items.winningNumTwo,
-                winningNumThree: action.items.winningNumThree,
+                winningNumOne: action.item.winningNumOne,
+                winningNumTwo: action.item.winningNumTwo,
+                winningNumThree: action.item.winningNumThree,
             };
         default:
             throw new Error('did not match any auth action types')

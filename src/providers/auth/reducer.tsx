@@ -1,13 +1,13 @@
 
 
 export interface IAuthState {
-    amount: string | null
+    amount: null
     error: string | null
     expiration: string | null
     nanoAddress: string | null
     sessionId: string | null
     toAddress: string | null
-    authenticated: boolean
+    authenticated: null
 }
 
 export interface IAuthAction {
@@ -30,7 +30,7 @@ const defaultState: IAuthState = {
     nanoAddress: null,
     sessionId: null,
     toAddress: null,
-    authenticated: false,
+    authenticated: null,
 };
 
 export default function reducer(state: IAuthState, action: IAuthAction) {
